@@ -99,38 +99,28 @@ class TACREDUtils(object):
 
     return data
 
-  # 문장 tokenize하고 subject, object 처음과 끝 구분하여 InputExample의 변수대로 정보 저장
   def make_examples(self, data):
     input_examples = []
 
     for sent_dict in tqdm(data):
-      # sent_dict은 data에서 한줄씩 들어
-      # self.relation_set : relation 관계 중복안되게 저장
       self.relation_set.add(sent_dict["relation"])
 
       mod_curr_idx = 0
-      # entity_markers : subject 처음과 끝, object 처음과 끝 [49, 50, 29, 30]
       entity_markers = [sent_dict["subj_start"], sent_dict["subj_end"], sent_dict["obj_start"], sent_dict["obj_end"]]
 
-      # assert 길이 확인 (True가 아니면 AssertError남)
       assert len(entity_markers) == 4
 
       bert_sub_tokens = []
       sub_tok_idx = []
       sub_tok_len = []
       for tok_idx, tok in enumerate(sent_dict["token"]):
-        # tok_idx : index, tok : 문장에 대한 word
         sub_token = self._bert_tokenizer.tokenize(tok)
         bert_sub_tokens.extend(sub_token)
 
         sub_tok_idx.append(mod_curr_idx)
         mod_curr_idx += len(sub_token)
         sub_tok_len.append(len(sub_token))
-      #   bert_sub_tokens : 문장에 tokenizer 적용/ sub_tok_indx : index 번호인데 masking쓰여진 것은 숫자가 늘어남/ sub_tok_len : 원래 입력 word는 ['He']로 받아 len이 1이지만 masking된건 1 이상
-
-      # print("bert_sub_tokens : ", bert_sub_tokens)
-      # assert len(bert_sub_tokens) > 512
-
+    
       if len(bert_sub_tokens) > 512:
         pass
       else:
@@ -186,19 +176,8 @@ class TACREDUtils(object):
 if __name__ == '__main__':
   # tacred
   tacred_json_path = "/home/heogle/developing/MTB-RelationExtraction/data/tacred_LDC2018T24/data/json/%s.json"
-  tacred_pkl_path = "/home/heogle/developing/MTB-RelationExtraction/data/processed_data/electra/tacred_%s.pkl"
+  tacred_pkl_path = "/home/heogle/developing/MTB-RelationExtraction/data/processed_data/bert/tacred_%s.pkl"
 
-  # FewRel
-  # tacred_json_path = "/home/heogle/developing/MTB-RelationExtraction/data/FewRel/data/FewRel_1.0/fewrel_pre/suffle/%s.json"
-  # tacred_pkl_path = "/home/heogle/developing/MTB-RelationExtraction/data/processed_data/electra/fewrel_%s.pkl"
-
-  # kbp
-  # tacred_json_path = "/home/heogle/developing/MTB-RelationExtraction/data/kbp37-master/kbp_pre/%s.json"
-  # tacred_pkl_path = "/home/heogle/developing/MTB-RelationExtraction/data/processed_data/electra/kbp_%s.pkl"
-
-  # SemEval
-  # tacred_json_path = "/home/heogle/developing/MTB-RelationExtraction/data/SemEval2010_task8_all_data/semeval_pre/%s.json"
-  # tacred_pkl_path = "/home/heogle/developing/MTB-RelationExtraction/data/processed_data/electra/semeval_%s.pkl"
 
   tacred_utils = TACREDUtils(tacred_pkl_path)
   tacred_utils = TACREDUtils(tacred_json_path)
@@ -207,10 +186,3 @@ if __name__ == '__main__':
     examples = tacred_utils.make_examples(data)
     tacred_utils.make_pkl(examples, tacred_pkl_path % data_type)
     # tacred_utils.read_pkl(tacred_pkl_path % data_type)
-
-
-  # 1. model이 바뀔 때마다 각 데이터의 tokenize를 적용한 .pkl을 만들어야함
-  #    - tacred_data_utils.py 돌리기
-  # 2. /home/heogle/developing/MTB-RelationExtraction/data/processed_data 에 있는 파일들 이름 통일하기
-  # 3. 그 다음 해당 모델을 적용하여 main.py 돌리기
-  #    - CUDA_VISIBLE_DEVICES=0 python main.py --model entity_markers --data tacred_bert
