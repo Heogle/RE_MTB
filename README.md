@@ -4,8 +4,8 @@ Data는 개별적으로 받아야하며 Relation Extraction Benchmars인 TACRED�
 구조는 아래 그림과 같다.   
 
 
-![entity-markers_eng](https://user-images.githubusercontent.com/31501328/103607001-400acd00-4f5b-11eb-9fe4-79b697e306fb.png)
-<img src="https://user-images.githubusercontent.com/31501328/103607001-400acd00-4f5b-11eb-9fe4-79b697e306fb.png" width="450px" height="300px"></img>
+
+<img src="https://user-images.githubusercontent.com/31501328/103607001-400acd00-4f5b-11eb-9fe4-79b697e306fb.png" width="600px" height="300px"></img>
 
 
 ### 1. Data Preprocessing
